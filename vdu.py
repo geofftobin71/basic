@@ -30,10 +30,10 @@ class VDU(pyglet.window.Window):
         self.display_aspect = (display_aspect if display_aspect is not None
                                else self.display_width / self.display_height)
 
-        self.fg_color = 14
-        self.bg_color = 6
-        self.border_color = 14
-        self.cursor_color = 14
+        self.fg_color = 40
+        self.bg_color = 0
+        self.border_color = 232
+        self.cursor_color = 2
         self.clear_color = self.bg_color
 
         self.print_cursor_x = 0
@@ -61,7 +61,7 @@ class VDU(pyglet.window.Window):
                                              dtype="f1")
         self.update_font()
 
-        self.colors = colors.c64
+        self.colors = colors.xterm
         self.colors_texture = self.ctx.texture((256, 1),
                                                components=3,
                                                dtype='f1')
