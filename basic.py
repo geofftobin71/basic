@@ -2249,8 +2249,8 @@ def main():
             print(e.message)
             sys.exit(1)
 
-        # vdu = VDU(320, 200, 4/3)
-        vdu = VDU(640, 256, 5/4)
+        vdu = VDU(320, 200, 4/3)
+        # vdu = VDU(640, 256, 5/4)
         interpreter = Interpreter(parser, vdu)
 
         pyglet.clock.schedule(interpreter.run)

@@ -55,7 +55,7 @@ class VDU(pyglet.window.Window):
                                              dtype="u1")
         self.cls()
 
-        self.font_bitmap = fonts.c64
+        self.font_bitmap = fonts.apple
         self.font_texture = self.ctx.texture((128, 128),
                                              components=1,
                                              dtype="f1")
