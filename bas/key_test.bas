@@ -1,0 +1,2 @@
+10 GET A$:IF A$ = "" THEN 10
+20 PRINT A$;:GOTO 10

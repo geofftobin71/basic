@@ -1,41 +1,21 @@
 #!/usr/bin/env python3
+
 """ BASIC Interpreter """
 import argparse
 import math
-import os
 import random
-import select
 import sys
-import termios
 from enum import Enum
 
 import pyglet
 
 from vdu import VDU
-# from pyglet.window import key
 
 ###############################################################################
 #                                                                             #
 #  GLOBAL FUNCTIONS                                                           #
 #                                                                             #
 ###############################################################################
-
-
-def getkey():
-    old_settings = termios.tcgetattr(sys.stdin)
-    new_settings = termios.tcgetattr(sys.stdin)
-    new_settings[3] &= ~(termios.ECHO | termios.ICANON)
-    new_settings[6][termios.VMIN] = 0
-    new_settings[6][termios.VTIME] = 0
-    termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, new_settings)
-    try:
-        if select.select([sys.stdin], [], [], 0.01) == ([sys.stdin], [], []):
-            b = sys.stdin.read(1)
-            return b[0].upper()
-        else:
-            return ""
-    finally:
-        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_settings)
 
 
 def init_list(dims, val):
@@ -1667,13 +1647,11 @@ class Interpreter(NodeVisitor):
 
     def visit_GetNode(self, node):
         var_name = node.var.value
-        try:
-            value = getkey()
-        except (KeyboardInterrupt, SystemExit):
-            os.system("stty sane")
 
         if not var_name.endswith('$'):
             type_mismatch_error(node.var.token)
+
+        value = self.vdu.getkey()
 
         var = self.global_scope.get(var_name)
 
@@ -2251,6 +2229,7 @@ def main():
 
         # vdu = VDU(320, 200, 4/3)
         vdu = VDU(640, 256, 4/3)
+
         interpreter = Interpreter(parser, vdu)
 
         pyglet.clock.schedule(interpreter.run)

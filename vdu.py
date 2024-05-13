@@ -30,6 +30,10 @@ class VDU(pyglet.window.Window):
         self.display_aspect = (display_aspect if display_aspect is not None
                                else self.display_width / self.display_height)
 
+        self.key_buffer = []
+        self.key_state = key.KeyStateHandler()
+        self.push_handlers(self.key_state)
+
         self.fg_color = 40
         self.bg_color = 0
         self.border_color = 232
@@ -104,9 +108,32 @@ class VDU(pyglet.window.Window):
         self.input_start_x = self.print_cursor_x
         self.input_start_y = self.print_cursor_y
 
+    def inkey(self, code):
+        return self.key_state(code)
+
+    def getkey(self):
+        if len(self.key_buffer) == 0:
+            return ""
+        else:
+            return self.key_buffer.pop()
+
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             self.close()
+
+        if symbol == key.LEFT:
+            self.key_buffer.append("LEFT")
+        elif symbol == key.RIGHT:
+            self.key_buffer.append("RIGHT")
+        elif symbol == key.UP:
+            self.key_buffer.append("UP")
+        elif symbol == key.DOWN:
+            self.key_buffer.append("DOWN")
+        elif symbol == key.ENTER:
+            self.key_buffer.append("ENTER")
+
+        if symbol >= key.SPACE and symbol <= key.ASCIITILDE:
+            self.key_buffer.append(chr(symbol).upper())
 
     def on_text(self, text):
         if self.input_mode != InputMode.EDITING:
