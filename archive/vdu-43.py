@@ -46,7 +46,7 @@ class VDU(pyglet.window.Window):
         self.print_cursor_y = 0
 
         self.display_texture = self.ctx.texture(
-            (self.display_width, self.display_height), 4)
+            (self.display_width, self.display_height), 3)
         self.display_texture.repeat_x = False
         self.display_texture.repeat_y = False
         self.display_texture.repeat_z = False
@@ -55,9 +55,9 @@ class VDU(pyglet.window.Window):
         self.display_fbo.viewport = (0, 0, self.display_width,
                                      self.display_height)
 
-        self.char_memory = bytearray(self.columns * self.rows * 4)
+        self.char_memory = bytearray(self.columns * self.rows * 3)
         self.char_texture = self.ctx.texture((self.columns, self.rows),
-                                             components=4,
+                                             components=3,
                                              dtype="u1")
         self.cls()
 
@@ -248,10 +248,10 @@ class VDU(pyglet.window.Window):
         self.colors_texture.use(3)
         self.display_vao.render()
 
+        self.display_texture.use(4)
         self.ctx.screen.use()
         self.viewport = (0, 0, *self.get_framebuffer_size())
         self.ctx.clear(*self.get_border_color_3f())
-        self.display_texture.use(4)
         self.pixel_upscale_vao.render()
 
     def update_font(self):
@@ -277,9 +277,9 @@ class VDU(pyglet.window.Window):
     def cls(self):
         self.clear_color = self.bg_color
         for i in range(self.columns * self.rows):
-            self.char_memory[i * 4 + 0] = 0
-            self.char_memory[i * 4 + 1] = self.fg_color
-            self.char_memory[i * 4 + 2] = self.clear_color
+            self.char_memory[i * 3 + 0] = 0
+            self.char_memory[i * 3 + 1] = self.fg_color
+            self.char_memory[i * 3 + 2] = self.clear_color
         self.print_cursor_x = 0
         self.print_cursor_y = 0
 
@@ -289,12 +289,12 @@ class VDU(pyglet.window.Window):
                 float(self.colors[self.border_color * 3 + 2]) / 0xFF)
 
     def scroll(self):
-        tmp = self.char_memory[self.columns * 4:]
+        tmp = self.char_memory[self.columns * 3:]
         for i in range(self.columns * self.rows):
-            self.char_memory[i * 4 + 0] = 0
-            self.char_memory[i * 4 + 1] = self.fg_color
-            self.char_memory[i * 4 + 2] = self.clear_color
-        self.char_memory[:-self.columns * 4] = tmp
+            self.char_memory[i * 3 + 0] = 0
+            self.char_memory[i * 3 + 1] = self.fg_color
+            self.char_memory[i * 3 + 2] = self.clear_color
+        self.char_memory[:-self.columns * 3] = tmp
         self.print_cursor_y -= 1
         self.input_start_y -= 1
 
@@ -350,7 +350,7 @@ class VDU(pyglet.window.Window):
                     self.scroll()
             else:
                 address = (self.columns * self.print_cursor_y +
-                           self.print_cursor_x) * 4
+                           self.print_cursor_x) * 3
                 self.char_memory[address] = ord(c)
                 self.char_memory[address + 1] = self.fg_color
                 self.char_memory[address + 2] = self.bg_color
@@ -364,27 +364,27 @@ class VDU(pyglet.window.Window):
                     self.scroll()
 
     def poke_char(self, x, y, c):
-        address = (self.columns * y + x) * 4
+        address = (self.columns * y + x) * 3
         self.char_memory[address] = c
 
     def poke_fg(self, x, y, fg):
-        address = (self.columns * y + x) * 4
+        address = (self.columns * y + x) * 3
         self.char_memory[address + 1] = fg
 
     def poke_bg(self, x, y, bg):
-        address = (self.columns * y + x) * 4
+        address = (self.columns * y + x) * 3
         self.char_memory[address + 2] = bg
 
     def peek_char(self, x, y):
-        address = (self.columns * y + x) * 4
+        address = (self.columns * y + x) * 3
         return self.char_memory[address]
 
     def peek_fg(self, x, y):
-        address = (self.columns * y + x) * 4
+        address = (self.columns * y + x) * 3
         return self.char_memory[address + 1]
 
     def peek_bg(self, x, y):
-        address = (self.columns * y + x) * 4
+        address = (self.columns * y + x) * 3
         return self.char_memory[address + 2]
 
 

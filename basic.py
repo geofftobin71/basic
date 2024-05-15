@@ -249,22 +249,6 @@ class TokenType(Enum):
     VAL = "VAL"
     # constants
     PI = "PI"
-    BLACK = "BLACK"
-    DARKRED = "DARKRED"
-    DARKGREEN = "DARKGREEN"
-    OLIVE = "OLIVE"
-    NAVY = "NAVY"
-    PURPLE = "PURPLE"
-    TEAL = "TEAL"
-    SILVER = "SILVER"
-    GREY = "GREY"
-    RED = "RED"
-    GREEN = "GREEN"
-    YELLOW = "YELLOW"
-    BLUE = "BLUE"
-    MAGENTA = "MAGENTA"
-    CYAN = "CYAN"
-    WHITE = "WHITE"
     # misc
     LINENUM = "LINENUM"  # must follow reserved keywords
     ID = "ID"
@@ -449,7 +433,7 @@ class Lexer():
         token_type = RESERVED_KEYWORDS.get(value.upper())
         if token_type is None:
             token.type = TokenType.ID
-            token.value = value  # .lower()
+            token.value = value
         else:
             # reserved keyword
             token.type = token_type
@@ -463,54 +447,6 @@ class Lexer():
             elif token.type == TokenType.PI:
                 token.type = TokenType.NUMBER
                 token.value = math.pi
-            elif token.type == TokenType.BLACK:
-                token.type = TokenType.NUMBER
-                token.value = 16
-            elif token.type == TokenType.DARKRED:
-                token.type = TokenType.NUMBER
-                token.value = 88
-            elif token.type == TokenType.DARKGREEN:
-                token.type = TokenType.NUMBER
-                token.value = 28
-            elif token.type == TokenType.OLIVE:
-                token.type = TokenType.NUMBER
-                token.value = 100
-            elif token.type == TokenType.NAVY:
-                token.type = TokenType.NUMBER
-                token.value = 18
-            elif token.type == TokenType.PURPLE:
-                token.type = TokenType.NUMBER
-                token.value = 90
-            elif token.type == TokenType.TEAL:
-                token.type = TokenType.NUMBER
-                token.value = 30
-            elif token.type == TokenType.SILVER:
-                token.type = TokenType.NUMBER
-                token.value = 145
-            elif token.type == TokenType.GREY:
-                token.type = TokenType.NUMBER
-                token.value = 102
-            elif token.type == TokenType.RED:
-                token.type = TokenType.NUMBER
-                token.value = 196
-            elif token.type == TokenType.GREEN:
-                token.type = TokenType.NUMBER
-                token.value = 46
-            elif token.type == TokenType.YELLOW:
-                token.type = TokenType.NUMBER
-                token.value = 226
-            elif token.type == TokenType.BLUE:
-                token.type = TokenType.NUMBER
-                token.value = 21
-            elif token.type == TokenType.MAGENTA:
-                token.type = TokenType.NUMBER
-                token.value = 201
-            elif token.type == TokenType.CYAN:
-                token.type = TokenType.NUMBER
-                token.value = 51
-            elif token.type == TokenType.WHITE:
-                token.type = TokenType.NUMBER
-                token.value = 231
 
         return token
 
@@ -1564,7 +1500,6 @@ class Interpreter(NodeVisitor):
             else:
                 s += f"{val:g}"
         s += node.end
-        # print(s, end=node.end)
         self.vdu.print(s)
 
     def visit_StyleNode(self, node):
@@ -1602,7 +1537,7 @@ class Interpreter(NodeVisitor):
 
         if self.vdu.input_done():
             self.next_node = self.current_node + 1
-            # values = input(f"{node.prompt}? ").split(',')
+
             values = self.vdu.input_buffer.decode().split(',')
             values = [v.strip() for v in values]
             values = [v.upper() for v in values]
@@ -2200,10 +2135,10 @@ class Interpreter(NodeVisitor):
         self.next_node = None
 
     def run(self, dt):
+        self.vdu.ic += 1
         try:
             if not self.visit(self.tree):
                 pyglet.clock.unschedule(self.run)
-                # self.vdu.close()
         except RuntimeError as e:
             print(e.message)
             pyglet.clock.unschedule(self.run)
@@ -2228,7 +2163,8 @@ def main():
             sys.exit(1)
 
         # vdu = VDU(320, 200, 4/3)
-        vdu = VDU(640, 256, 4/3)
+        vdu = VDU(480, 360, 4/3)
+        # vdu = VDU(640, 256, 4/3)
 
         interpreter = Interpreter(parser, vdu)
 
